@@ -4,7 +4,6 @@ const DB = require('./DB');
 const app = express()
 const port = 3000
 
-const secretKey = 'secret-key';
 const database = new DB();
 
 app.post('/login', (req,res) => {
