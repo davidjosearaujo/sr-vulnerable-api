@@ -23,4 +23,4 @@ function verifyToken(req, res, next) {
     });
   }
 
-  module.exports = [generateToken, verifyToken]
+  module.exports = {generateToken, verifyToken}
