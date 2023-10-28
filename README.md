@@ -3,6 +3,7 @@
 ## Run
 
 ```
+(docker version used: 24.0.6)
 build:
     sudo docker compose build
 
