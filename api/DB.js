@@ -26,6 +26,8 @@ class DB {
         );
     }
 
+    
+
     async runSchemaQueryFromFile(filePath) {
         const fs = require("fs");
         return new Promise((resolve, reject) => {
@@ -52,10 +54,10 @@ class DB {
                 "SELECT * FROM teachers WHERE username = ? AND password = ?",
                 [username, password],
                 (err, row) => {
-                    if (err) {
+                    if (err || row.length != 1) {
                         reject(err);
                     } else {
-                        resolve(row);
+                        resolve(row[0]);
                     }
                 }
             );
@@ -63,36 +65,46 @@ class DB {
     }
 
     async getTeacherClasses(id) {
-        return this.db.all(
-            `SELECT * FROM classes WHERE teacher_id=?`,
-            [id],
-            (err, rows) => {
-                if (err) return false;
-                return rows.length > 0 ? true : false;
-            }
-        );
+        return new Promise((resolve, reject) => {
+            this.db.all(
+                `SELECT * FROM classes WHERE teacher_id= ?`,
+                [id],
+                (err, rows) => {
+                    if (err) reject(err);
+                    resolve(rows);   
+                }
+            );
+        });
     }
 
-    async getStudentClasses(id) {
-        return this.db.all(
-            `SELECT * FROM student_classes WHERE student_id=?`,
-            [id],
-            (err, rows) => {
-                if (err) return false;
-                return rows.length > 0 ? true : false;
-            }
-        );
+    async teacherBelongToClass(teacher_id, class_id) {
+        return new Promise((resolve, _) => {
+            this.db.all(
+                `SELECT * FROM classes WHERE teacher_id=? AND id=?`,
+                [teacher_id, class_id],
+                (err, rows) => {
+                    if(err || rows.length == 0) resolve(false);
+                    
+                    resolve(true);
+                }
+            ) 
+        });
     }
 
-    async deleteStudentClass(class_id, student_id) {
-        return this.db.all(
-            "DELETE FROM student_classes WHERE student_id = ? AND class_id = ?",
-            [student_id, class_id],
-            (err, rows) => {
-                if (err) return false;
-                return rows.length > 0 ? true : false;
-            }
-        );
+    async getStudentsByClass(id) {
+        return new Promise((resolve, reject) => {
+            this.db.all(
+                `SELECT * FROM students
+                JOIN student_classes ON students.id = student_classes.student_id
+                WHERE class_id=?
+                `,
+                [id],
+                (err, rows) => {
+                    if (err) reject(err)
+                    resolve(rows);
+                }
+            );
+        });
     }
 }
 

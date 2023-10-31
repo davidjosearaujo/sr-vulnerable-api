@@ -1,5 +1,5 @@
 const express = require('express')
-var { expressjwt: jwt } = require("express-jwt");
+var { expressjwt: jwt, UnauthorizedError } = require("express-jwt");
 const DB = require('./DB');
 
 const {verifyToken, generateToken} = require('./security')
@@ -9,6 +9,15 @@ const port = 3000
 
 const database = new DB();
 
+/*
+  Sugestões de falhas:
+  1 - verifyToken -> verificar mal o token
+  2 - GET /studentsByClass verifica mal se o teacher pertence à classe
+  3 - sql injection no getStudentsByClass (não sanitizar o input (linha 59))
+*/
+
+
+
 app.post('/login', async(req,res) => {
 
   const { username, password } = req.body;
@@ -16,7 +25,6 @@ app.post('/login', async(req,res) => {
   try{
 
     const user = await database.getUser(username,password);
-
     const token = generateToken({username: user.username, id: user.id});
 
     res.json({token});
@@ -24,22 +32,53 @@ app.post('/login', async(req,res) => {
 
   } catch(error) {
 
-    res.status(401).send('Authentication failed');
+    res.status(401).json({error: 'Authentication failed'});
   }
 
 
-})
+});
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app.get('/classes', verifyToken, async(req,res) => {
+
+    try {
+      const classes = await database.getTeacherClasses(req.user.id);
+      res.status(200).send(classes);
+
+    } catch(error) {
+      res.status(500).json({error: error.message});
+    }
+});
+
+app.get('/studentsByClass', verifyToken, async (req, res) => {
+  try {
+    if (!req.query.id) {
+      return res.status(400).json({ error: 'Missing "id" query parameter' });
+    }
+
+    const id = req.query.id;
+    const parsedId = Number(id, 10);
+
+    if (isNaN(parsedId)) {
+      return res.status(400).json({ error: '"id" is not a valid number' });
+    }
+
+    const teacherHasAccess = await database.teacherBelongToClass(req.user.id, parsedId);
+    if (!teacherHasAccess) {
+      return res.status(403).json({ error: 'Teacher does not have access to the class' });
+    }
+
+    const students = await database.getStudentsByClass(parsedId);
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 
 app.listen(port, () => {
-  console.log(`App is listening on port ${port}`)
+  console.log(`Api is listening on port ${port}`)
 })
 
 
-//tokens
-//professores podem ver turmas 
-//sv verifica mal a data do token
-//quando pesquisa por um id da turma invalido o sv cai
