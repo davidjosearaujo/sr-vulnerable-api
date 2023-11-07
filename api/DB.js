@@ -26,8 +26,6 @@ class DB {
         );
     }
 
-    
-
     async runSchemaQueryFromFile(filePath) {
         const fs = require("fs");
         return new Promise((resolve, reject) => {
@@ -71,7 +69,7 @@ class DB {
                 [id],
                 (err, rows) => {
                     if (err) reject(err);
-                    resolve(rows);   
+                    resolve(rows);
                 }
             );
         });
@@ -83,14 +81,15 @@ class DB {
                 `SELECT * FROM classes WHERE teacher_id=? AND id=?`,
                 [teacher_id, class_id],
                 (err, rows) => {
-                    if(err || rows.length == 0) resolve(false);
-                    
+                    if (err || rows.length == 0) resolve(false);
+
                     resolve(true);
                 }
-            ) 
+            );
         });
     }
 
+    //TODO: sql injection no getStudentsByClass
     async getStudentsByClass(id) {
         return new Promise((resolve, reject) => {
             this.db.all(
@@ -100,7 +99,7 @@ class DB {
                 `,
                 [id],
                 (err, rows) => {
-                    if (err) reject(err)
+                    if (err) reject(err);
                     resolve(rows);
                 }
             );
