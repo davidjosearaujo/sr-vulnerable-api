@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS students (
 CREATE TABLE IF NOT EXISTS classes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     class_name TEXT NOT NULL,
-    teacher_id INTEGER NOT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES teachers (id)
+    teacher_username TEXT NOT NULL,
+    FOREIGN KEY (teacher_username) REFERENCES teachers (username)
 );
 
 CREATE TABLE IF NOT EXISTS student_classes (
@@ -34,10 +34,10 @@ INSERT INTO students (name) VALUES
     ('David Brown'),
     ('Linda Wilson');
 
-INSERT INTO classes (class_name, teacher_id) VALUES
-    ('Math 101', 1),
-    ('History 201', 2),
-    ('Science 301', 3);
+INSERT INTO classes (class_name, teacher_username) VALUES
+    ('Math 101', 'JohnSmith'),
+    ('History 201', 'MaryJohnson'),
+    ('Science 301', 'RobertDavis');
 
 INSERT INTO student_classes (student_id, class_id) VALUES
     (1, 1), 

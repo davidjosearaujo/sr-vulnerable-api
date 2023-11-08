@@ -62,11 +62,11 @@ class DB {
         });
     }
 
-    async getTeacherClasses(id) {
+    async getTeacherClasses(username) {
         return new Promise((resolve, reject) => {
             this.db.all(
-                `SELECT * FROM classes WHERE teacher_id= ?`,
-                [id],
+                `SELECT * FROM classes WHERE teacher_username= ?`,
+                [username],
                 (err, rows) => {
                     if (err) reject(err);
                     resolve(rows);
@@ -75,11 +75,11 @@ class DB {
         });
     }
 
-    async teacherBelongToClass(teacher_id, class_id) {
+    async teacherBelongToClass(teacher_username, class_id) {
         return new Promise((resolve, _) => {
             this.db.all(
-                `SELECT * FROM classes WHERE teacher_id=? AND id=?`,
-                [teacher_id, class_id],
+                `SELECT * FROM classes WHERE teacher_username=? AND id=?`,
+                [teacher_username, class_id],
                 (err, rows) => {
                     if (err || rows.length == 0) resolve(false);
 

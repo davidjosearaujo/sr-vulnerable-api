@@ -1,4 +1,7 @@
 const express = require("express");
+const jose = require("node-jose");
+const fs = require("fs");
+
 var { expressjwt: jwt, UnauthorizedError } = require("express-jwt");
 const DB = require("./DB");
 
@@ -9,22 +12,32 @@ const port = 3000;
 
 const database = new DB();
 
+app.get("/jwks", async (req, res) => {
+    const ks = fs.readFileSync("keys.json");
+    const keyStore = await jose.JWK.asKeyStore(ks.toString());
+    res.send(keyStore.toJSON());
+});
+
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
         const user = await database.getUser(username, password);
-        const token = generateToken({ username: user.username, id: user.id });
+        const token = await generateToken({
+            username: user.username,
+            id: user.id,
+        });
 
         res.json({ token });
     } catch (error) {
+        console.log(error);
         res.status(401).json({ error: "Authentication failed" });
     }
 });
 
 app.get("/classes", verifyToken, async (req, res) => {
     try {
-        const classes = await database.getTeacherClasses(req.user.id);
+        const classes = await database.getTeacherClasses(req.user.username);
         res.status(200).send(classes);
     } catch (error) {
         res.status(500).json({ error: error.message });
