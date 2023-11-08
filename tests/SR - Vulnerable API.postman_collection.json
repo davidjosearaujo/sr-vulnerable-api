@@ -7,6 +7,24 @@
 	},
 	"item": [
 		{
+			"name": "Get JWKS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/jwks",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"jwks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Login",
 			"event": [
 				{
@@ -33,11 +51,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/login",
+					"raw": "{{baseUrl}}/login",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
 						"login"
 					]
@@ -61,13 +78,45 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/classes",
+					"raw": "{{baseUrl}}/classes",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
 						"classes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Studends in Class",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/studentsByClass?id=1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"studentsByClass"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
 					]
 				}
 			},
@@ -98,6 +147,11 @@
 		{
 			"key": "jwt",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "localhost:3000",
 			"type": "string"
 		}
 	]
