@@ -1,13 +1,11 @@
 FROM node:latest
 
-
 WORKDIR /app
 
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm install && \
-    npm install express-jwt
+RUN npm install
 
 COPY . .
 

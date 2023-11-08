@@ -44,7 +44,6 @@ app.get("/classes", verifyToken, async (req, res) => {
     }
 });
 
-// TODO: verifica mal se o teacher pertence à classe
 app.get("/studentsByClass", verifyToken, async (req, res) => {
     try {
         if (!req.query.id) {
@@ -62,8 +61,10 @@ app.get("/studentsByClass", verifyToken, async (req, res) => {
                 .json({ error: '"id" is not a valid number' });
         }
 
+        // TODO: Allow for SQL injection soo a forged token can
+        // add a teacher to a class it should not have access to
         const teacherHasAccess = await database.teacherBelongToClass(
-            req.user.id,
+            req.user.username,
             parsedId
         );
         if (!teacherHasAccess) {

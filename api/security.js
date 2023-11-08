@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const jose = require("node-jose");
 const jwktopem = require("jwk-to-pem");
 const fs = require("fs");
-const { decode } = require("punycode");
 
 key = "tokenkey";
 
@@ -54,20 +53,18 @@ async function verifyToken(req, res, next) {
         return res.status(403).json({ error: "No token provided" });
     }
 
-    decoded = token.toString().substring(7);
-
-    jwt_header = JSON.parse(
+    const decoded = token.toString().substring(7);
+    const jwt_header = JSON.parse(
         Buffer.from(decoded.split(".")[0], "base64").toString()
     );
 
     const publicKey = jwktopem(jwt_header.jwk);
+    const verified = jwt.verify(token.toString().substring(7), publicKey);
 
-    decoded = jwt.verify(token.toString().substring(7), publicKey);
-
-    if (decoded) {
+    if (verified) {
         req.user = {
-            username: decoded.username,
-            id: decoded.id,
+            username: verified.username,
+            id: verified.id,
         };
         next();
     }
