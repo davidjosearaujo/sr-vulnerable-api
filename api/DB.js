@@ -46,6 +46,22 @@ class DB {
         });
     }
 
+    async setUser(username, password) {
+        return new Promise((resolve, reject) => {
+            this.db.all(
+                "INSERT INTO teachers (username, password) VALUES (?,?)",
+                [username, password],
+                (err, row) => {
+                    if (err || row.length != 0) {
+                        reject(err);
+                    } else {
+                        resolve(true);
+                    }
+                }
+            );
+        });
+    }
+
     async getUser(username, password) {
         return new Promise((resolve, reject) => {
             this.db.all(
@@ -89,7 +105,6 @@ class DB {
         });
     }
 
-    //TODO: sql injection no getStudentsByClass
     async getStudentsByClass(id) {
         return new Promise((resolve, reject) => {
             this.db.all(
@@ -98,6 +113,18 @@ class DB {
                 WHERE class_id=?
                 `,
                 [id],
+                (err, rows) => {
+                    if (err) reject(err);
+                    resolve(rows);
+                }
+            );
+        });
+    }
+
+    async existingUsers(role, username) {
+        return new Promise((resolve, reject) => {
+            this.db.all(
+                "SELECT * FROM " + role + " WHERE username='" + username + "'",
                 (err, rows) => {
                     if (err) reject(err);
                     resolve(rows);

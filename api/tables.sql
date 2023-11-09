@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS teachers (
 
 CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
+    username TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS classes (
@@ -29,7 +29,7 @@ INSERT INTO teachers (username, password) VALUES
     ('MaryJohnson', 'password2'),
     ('RobertDavis', 'password3');
 
-INSERT INTO students (name) VALUES
+INSERT INTO students (username) VALUES
     ('Alice Jones'),
     ('David Brown'),
     ('Linda Wilson');

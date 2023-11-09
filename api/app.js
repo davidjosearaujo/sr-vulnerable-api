@@ -1,21 +1,38 @@
-const express = require("express");
-const jose = require("node-jose");
-const fs = require("fs");
-
-var { expressjwt: jwt, UnauthorizedError } = require("express-jwt");
-const DB = require("./DB");
-
 const { verifyToken, generateToken } = require("./security");
+
+const DB = require("./DB");
+const database = new DB();
+
+const express = require("express");
 const app = express();
 app.use(express.json());
 const port = 3000;
 
-const database = new DB();
+app.post("/register/:role", async (req, res) => {
+    const { username, password } = req.body;
 
-app.get("/jwks", async (req, res) => {
-    const ks = fs.readFileSync("keys.json");
-    const keyStore = await jose.JWK.asKeyStore(ks.toString());
-    res.send(keyStore.toJSON());
+    const existing = await database.existingUsers(req.params.role, username);
+    res.setHeader("Status", JSON.stringify(existing));
+
+    try {
+        if (existing.length == 0 && req.params.role == "teachers") {
+            const inserted = await database.setUser(username, password);
+
+            const user = await database.getUser(username, password);
+            const token = await generateToken({
+                username: user.username,
+                id: user.id,
+            });
+
+            res.json({ token });
+        } else {
+            res.status(401).json({
+                error: "Only teachers are allowed to register",
+            });
+        }
+    } catch (error) {
+        res.status(401).json({ error: "Registration failed" });
+    }
 });
 
 app.post("/login", async (req, res) => {
@@ -30,7 +47,6 @@ app.post("/login", async (req, res) => {
 
         res.json({ token });
     } catch (error) {
-        console.log(error);
         res.status(401).json({ error: "Authentication failed" });
     }
 });

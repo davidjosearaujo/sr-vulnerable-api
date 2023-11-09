@@ -1,9 +1,7 @@
+const jwktopem = require("jwk-to-pem");
 const jwt = require("jsonwebtoken");
 const jose = require("node-jose");
-const jwktopem = require("jwk-to-pem");
 const fs = require("fs");
-
-key = "tokenkey";
 
 const keyStore = jose.JWK.createKeyStore();
 
