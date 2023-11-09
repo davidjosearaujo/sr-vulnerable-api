@@ -8,15 +8,15 @@ const app = express();
 app.use(express.json());
 const port = 3000;
 
-app.post("/register/:role", async (req, res) => {
+app.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
     const existing = await database.existingUsers(req.params.role, username);
     res.setHeader("Status", JSON.stringify(existing));
 
     try {
-        if (existing.length == 0 && req.params.role == "teachers") {
-            const inserted = await database.setUser(username, password);
+        if (existing.length == 0) {
+            await database.setUser(username, password);
 
             const user = await database.getUser(username, password);
             const token = await generateToken({
@@ -27,7 +27,7 @@ app.post("/register/:role", async (req, res) => {
             res.json({ token });
         } else {
             res.status(401).json({
-                error: "Only teachers are allowed to register",
+                error: "Registration failed",
             });
         }
     } catch (error) {

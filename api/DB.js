@@ -124,7 +124,9 @@ class DB {
     async existingUsers(role, username) {
         return new Promise((resolve, reject) => {
             this.db.all(
-                "SELECT * FROM " + role + " WHERE username='" + username + "'",
+                "SELECT username FROM teachers WHERE username='" +
+                    username +
+                    "'",
                 (err, rows) => {
                     if (err) reject(err);
                     resolve(rows);
