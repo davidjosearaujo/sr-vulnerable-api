@@ -7,18 +7,40 @@
 	},
 	"item": [
 		{
-			"name": "Get JWKS",
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"jwt\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"Test\",\n    \"password\": \"test1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "localhost:3000/jwks",
+					"raw": "localhost:3000/register/{{role}}",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"jwks"
+						"register",
+						"{{role}}"
 					]
 				}
 			},
@@ -51,10 +73,11 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/login",
+					"raw": "localhost:3000/login",
 					"host": [
-						"{{baseUrl}}"
+						"localhost"
 					],
+					"port": "3000",
 					"path": [
 						"login"
 					]
@@ -90,7 +113,10 @@
 			"response": []
 		},
 		{
-			"name": "Studends in Class",
+			"name": "Studends by Class",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -104,6 +130,15 @@
 				},
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{baseUrl}}/studentsByClass?id=1",
 					"host": [
@@ -152,6 +187,11 @@
 		{
 			"key": "baseUrl",
 			"value": "localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "role",
+			"value": "teachers",
 			"type": "string"
 		}
 	]
