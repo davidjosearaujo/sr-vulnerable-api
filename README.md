@@ -1,13 +1,7 @@
-# sr-vulnerable-api
+# SR Vulnerable API
 
-## Run
+To build and run Docker container, execute the following command.
 
 ```
-(docker version used: 24.0.6)
-build:
-    sudo docker compose build
-
-run:
-    sudo docker compose up
-
+sudo docker-compose up --build
 ```
