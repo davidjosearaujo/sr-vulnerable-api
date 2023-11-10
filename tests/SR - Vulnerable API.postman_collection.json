@@ -33,14 +33,12 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/register/{{role}}",
+					"raw": "{{baseUrl}}/register",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
-						"register",
-						"{{role}}"
+						"register"
 					]
 				}
 			},
@@ -65,7 +63,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"MaryJohnson\",\n    \"password\": \"password2\"\n}",
+					"raw": "{\n    \"username\": \"JohnSmith\",\n    \"password\": \"password1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -73,11 +71,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/login",
+					"raw": "{{baseUrl}}/login",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
 						"login"
 					]
@@ -187,11 +184,6 @@
 		{
 			"key": "baseUrl",
 			"value": "localhost:3000",
-			"type": "string"
-		},
-		{
-			"key": "role",
-			"value": "teachers",
 			"type": "string"
 		}
 	]

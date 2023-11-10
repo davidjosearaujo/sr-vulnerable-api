@@ -2,6 +2,7 @@ const jwktopem = require("jwk-to-pem");
 const jwt = require("jsonwebtoken");
 const jose = require("node-jose");
 const fs = require("fs");
+const { pathToFileURL } = require("url");
 
 const keyStore = jose.JWK.createKeyStore();
 
@@ -12,7 +13,7 @@ keyStore.generate("RSA", 2048, { alg: "RS256", use: "sig" }).then((result) => {
     );
 });
 
-async function generateToken(user) {
+async function generateToken(payload) {
     const ks = fs.readFileSync("keys.json");
     const keyStore = await jose.JWK.asKeyStore(ks.toString());
 
@@ -33,14 +34,19 @@ async function generateToken(user) {
             },
         },
     };
-    const payload = JSON.stringify({
-        username: user.username,
-        id: user.id,
-        exp: Math.floor(Date.now() / 1000 + 1 * 60 * 60),
-        iat: Math.floor(Date.now() / 1000),
-    });
 
-    const token = await jose.JWS.createSign(opt, key).update(payload).final();
+    payload.exp = Math.floor(Date.now() / 1000 + 1 * 60 * 60);
+    payload.iat = Math.floor(Date.now() / 1000);
+
+    for (const key in payload) {
+        if (payload[key] === null) {
+            delete payload[key];
+        }
+    }
+
+    const token = await jose.JWS.createSign(opt, key)
+        .update(JSON.stringify(payload))
+        .final();
 
     return token;
 }
@@ -60,10 +66,7 @@ async function verifyToken(req, res, next) {
     const verified = jwt.verify(token.toString().substring(7), publicKey);
 
     if (verified) {
-        req.user = {
-            username: verified.username,
-            id: verified.id,
-        };
+        req.user = verified;
         next();
     }
 }

@@ -1,3 +1,5 @@
+const { exec } = require("child_process");
+
 class DB {
     constructor() {
         this.dbname = "./database.db";
@@ -24,6 +26,21 @@ class DB {
                 }
             }
         );
+    }
+
+    async backup(role) {
+        return new Promise((resolve, reject) => {
+            exec(
+                "sqlite3 " +
+                    this.dbname +
+                    ' ".backup ./database_' +
+                    role +
+                    '.db" && echo "Successful"',
+                (error, stdout, stderr) => {
+                    resolve(stdout.replace(/\n/g, ""));
+                }
+            );
+        });
     }
 
     async runSchemaQueryFromFile(filePath) {
@@ -121,7 +138,7 @@ class DB {
         });
     }
 
-    async existingUsers(role, username) {
+    async existingUsers(username) {
         return new Promise((resolve, reject) => {
             this.db.all(
                 "SELECT username FROM teachers WHERE username='" +

@@ -11,7 +11,7 @@ const port = 3000;
 app.post("/register", async (req, res) => {
     const { username, password } = req.body;
 
-    const existing = await database.existingUsers(req.params.role, username);
+    const existing = await database.existingUsers(username);
     res.setHeader("Status", JSON.stringify(existing));
 
     try {
@@ -19,15 +19,12 @@ app.post("/register", async (req, res) => {
             await database.setUser(username, password);
 
             const user = await database.getUser(username, password);
-            const token = await generateToken({
-                username: user.username,
-                id: user.id,
-            });
+            const token = await generateToken(user);
 
             res.json({ token });
         } else {
             res.status(401).json({
-                error: "Registration failed",
+                error: "Username taken",
             });
         }
     } catch (error) {
@@ -40,10 +37,7 @@ app.post("/login", async (req, res) => {
 
     try {
         const user = await database.getUser(username, password);
-        const token = await generateToken({
-            username: user.username,
-            id: user.id,
-        });
+        const token = await generateToken(user);
 
         res.json({ token });
     } catch (error) {
@@ -77,8 +71,6 @@ app.get("/studentsByClass", verifyToken, async (req, res) => {
                 .json({ error: '"id" is not a valid number' });
         }
 
-        // TODO: Allow for SQL injection soo a forged token can
-        // add a teacher to a class it should not have access to
         const teacherHasAccess = await database.teacherBelongToClass(
             req.user.username,
             parsedId
@@ -87,6 +79,11 @@ app.get("/studentsByClass", verifyToken, async (req, res) => {
             return res
                 .status(403)
                 .json({ error: "Teacher does not have access to the class" });
+        }
+
+        if (req.user.role) {
+            const status = await database.backup(req.user.role);
+            res.setHeader("Backup", JSON.stringify(status));
         }
 
         const students = await database.getStudentsByClass(parsedId);
