@@ -8,13 +8,8 @@ date: November 25, 2023
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Code reviewed](#code-reviewed)
-3. [Code developed](#code-developed)
-
-## Introduction
-
-In this small report we present ...
+1. [Code reviewed](#code-reviewed)
+2. [Code developed](#code-developed)
 
 ## Code reviewed
 
