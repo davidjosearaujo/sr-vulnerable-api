@@ -33,8 +33,6 @@ date: November 25, 2023
 
 From [OWASP's Secure Coding Practices Checklist](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist) the three vulnerabilities implemented fall under the following categories:
 
-- Validate all client provided data before processing;
 - Contextually sanitize all output of un-trusted data to queries for SQL, XML, and LDAP;
 - Sanitize all output of untrusted data to operating system commands;
 - Use only trusted system objects, e.g. server side session objects, for making access authorization decisions;
-- Protect secrets from unauthorized access.
